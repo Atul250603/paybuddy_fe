@@ -1,14 +1,17 @@
 import React, { useRef, useState } from 'react'
+import toast from 'react-hot-toast';
 export default function NewTransactForm(props) {
   const reflCose = useRef(null)
   const [data, setdata] = useState({email:"",amount:""});
+  const [showSpinner,setshowSpinner]=useState(false);
   const{topay,settopay}=props;
   const settingData=(e)=>{
     setdata({...data,[e.target.name]:e.target.value});
   }
   const makenewtransact=async(e)=>{
     e.preventDefault();
-    const userresponse=await fetch("https://paybuddy.onrender.com/auth/getuserbymail",{
+    setshowSpinner(true);
+    const userresponse=await fetch(`${process.env.REACT_APP_SERVER}/auth/getuserbymail`,{
             method: 'POST', // *GET, POST, PUT, DELETE, etc.
             headers: {
               'Content-Type': 'application/json'
@@ -19,7 +22,7 @@ export default function NewTransactForm(props) {
     const userresp=await userresponse.json();
     const userId=userresp[0]._id;
     const idx=topay.findIndex((element)=>{return element.nextUser===userId});
-    const response = await fetch("https://paybuddy.onrender.com/transact/topay", {
+    const response = await fetch(`${process.env.REACT_APP_SERVER}/transact/topay`, {
             method: 'POST', // *GET, POST, PUT, DELETE, etc.
             headers: {
               'Content-Type': 'application/json',
@@ -29,24 +32,33 @@ export default function NewTransactForm(props) {
             body: JSON.stringify({email:data.email,amount:data.amount}) // body data type must match "Content-Type" header
           });
       const resp=await response.json();
-      if(idx>=0){
-        let temp=[...topay];
-        temp[idx].amount+=Number(data.amount);
+      if(resp && resp.success){
+        if(idx>=0){
+          let temp=[...topay];
+          temp[idx].amount+=Number(data.amount);
+          settopay(temp);
+        }
+        else{
+          let temp=[...topay];
+        temp.push(resp.transact);
         settopay(temp);
+        }
+        toast.success(resp.success);
+      }
+      else if(resp && resp.errors){
+        toast.error(resp.errors);
       }
       else{
-        let temp=[...topay];
-      temp.push(resp.transact);
-      settopay(temp);
+        toast.error("Some Error Occured");
       }
+      setshowSpinner(false);
       reflCose.current.click();
   }
   return (
     <div className='mx-3'>
-    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-plus-circle-fill" viewBox="0 0 16 16">
-  <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
-</svg>
+    <button type="button" className="btn btn-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#exampleModal">
+      Add New Transaction
+      <svg xmlns="http://www.w3.org/2000/svg" className="mx-1" height="20" width="20" viewBox="0 0 448 512"><path fill="#ffffff" d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg>
   </button>
   <div className="modal fade" id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div className="modal-dialog">
@@ -66,7 +78,9 @@ export default function NewTransactForm(props) {
     <input type="number" className="form-control" name="amount" id="amount" onChange={settingData} value={data.amount} required/>
   </div>
   <div className='text-center'>
-  <button type="submit" className="btn btn-primary">Add</button>
+  <button type="submit" className="btn btn-primary d-flex align-items-center" disabled={showSpinner}>{(showSpinner)?<div class="spinner-border text-light mx-1" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>:<></>}Add</button>
   </div>
 </form>
         </div>

@@ -1,15 +1,18 @@
 import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import payContext from '../context/paycontext/PayContext';
+import toast from 'react-hot-toast';
 export default function Login() {
    const navigate=useNavigate();
     const [credentials, setcredentials] = useState({email:"",password:""});
+    const [showSpinner,setshowSpinner]=useState(false);
     const settingCred = (e) => {
         setcredentials({ ...credentials, [e.target.name]: e.target.value });
       };
       const login=async(e)=>{
           e.preventDefault();
-          const response = await fetch("https://paybuddy.onrender.com/auth/login", {
+          setshowSpinner(true);
+          const response = await fetch(`${process.env.REACT_APP_SERVER}/auth/login`, {
             method: 'POST', // *GET, POST, PUT, DELETE, etc.
             headers: {
               'Content-Type': 'application/json'
@@ -18,8 +21,19 @@ export default function Login() {
             body: JSON.stringify({email:credentials.email,password:credentials.password}) // body data type must match "Content-Type" header
           });
           const resp=await response.json();
-          localStorage.setItem('token',resp.token);
-          navigate('/');
+          if(resp && resp.success){
+            toast.success(resp.success);
+            localStorage.setItem('token',resp.token);
+            setshowSpinner(false);
+            navigate('/');
+          }
+          else if(resp && resp.errors){
+            toast.error(resp.errors);
+          }
+          else{
+            toast.error("Some Error Occured");
+          }
+          setshowSpinner(false);
       }
   return (
       <div className='container mt-4 col-6'>
@@ -34,8 +48,10 @@ export default function Login() {
     <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
     <input type="password" className="form-control" name="password" id="exampleInputPassword1" onChange={settingCred} value={credentials.password} required/>
   </div>
-  <button type="submit" className="btn btn-primary">Login</button>
-</form>
-      </div>
+      <button type="submit" className="btn btn-primary d-flex align-items-center" disabled={showSpinner}>{(showSpinner)?<div class="spinner-border text-light mx-1" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>:<></>}Login</button>
+  </form>
+ </div>
   )
 }

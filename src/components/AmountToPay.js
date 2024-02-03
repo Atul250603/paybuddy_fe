@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast';
 export default function AmountToPay(props) {
   const [user, setuser] = useState(null)
   const [amount, setamount] = useState(0);
   const [error, seterror] = useState("");
+  const [showSpinner,setshowSpinner]=useState(false);
   const{topay,settopay}=props;
   const refClose = useRef(null)
   const settingamount=(e)=>{
@@ -10,14 +12,23 @@ export default function AmountToPay(props) {
   }
   useEffect(() => {
     const getuser=async()=>{
-      const response = await fetch("https://paybuddy.onrender.com/auth/getuser", {
+      const response = await fetch(`${process.env.REACT_APP_SERVER}/auth/getuser`, {
           method: 'POST', // *GET, POST, PUT, DELETE, etc.
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({id:props.User})
         });
-        setuser(await response.json());
+        let msg=await response.json();
+        if(msg && !msg.errors){
+          setuser(msg);
+        }
+        else if(msg && msg.errors){
+          toast.error(msg.errors);
+        }
+        else{
+          toast.error("Some Error Occured");
+        }
     }
     getuser();
   }, [])
@@ -27,22 +38,8 @@ export default function AmountToPay(props) {
       seterror("Invalid Amount");
     }
     else{
-      const tempAmount=props.Amount-amount;
-      if(tempAmount==0){
-        const temptopay=[...topay];
-        const idx=temptopay.findIndex((element)=>{return element.nextUser===user.user._id});
-        let removed= temptopay.splice(idx,1);
-        settopay(temptopay);
-        refClose.current.click();
-      }
-      else{
-        const temptopay=[...topay];
-        const idx=temptopay.findIndex((element)=>{return element.nextUser===user.user._id});
-        temptopay[idx].amount-=amount;
-        settopay(temptopay);
-        refClose.current.click();
-      }
-      const response = await fetch("https://paybuddy.onrender.com/transact/paid", {
+      setshowSpinner(true);
+      const response = await fetch(`${process.env.REACT_APP_SERVER}/transact/paid`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +51,24 @@ export default function AmountToPay(props) {
         body: JSON.stringify({email:user.user.email,amount:amount}) // body data type must match "Content-Type" header
       });
       let resp=await response.json(); 
-
+      if(resp && resp.success){
+        toast.success(resp.success)
+        const tempAmount=props.Amount-amount;
+        if(tempAmount==0){
+          const temptopay=[...topay];
+          const idx=temptopay.findIndex((element)=>{return element.nextUser===user.user._id});
+          let removed= temptopay.splice(idx,1);
+          settopay(temptopay);
+        }
+        else{
+          const temptopay=[...topay];
+          const idx=temptopay.findIndex((element)=>{return element.nextUser===user.user._id});
+          temptopay[idx].amount-=amount;
+          settopay(temptopay);
+        }
+      }
+      setshowSpinner(false);
+      refClose.current.click();
     }
   }
   return (
@@ -85,7 +99,11 @@ export default function AmountToPay(props) {
     <input type="number" className="form-control w-50 mx-2" id="amountpaid" name="amountpaid" value={amount} onChange={settingamount} aria-describedby="emailHelp"/>
   </div>
   {(error!=="")?<div className='text-danger'>{error}</div>:<></>}
-  <button type="submit " className="btn btn-primary mt-2">Paid</button>
+    <div className="d-flex justify-content-center">
+  <button type="submit" className="btn btn-primary d-flex align-items-center" disabled={showSpinner}>{(showSpinner)?<div class="spinner-border text-light mx-1" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>:<></>}Paid</button>
+    </div>
 </form>
       </div>
     </div>

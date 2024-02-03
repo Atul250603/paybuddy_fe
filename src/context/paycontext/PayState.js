@@ -11,7 +11,6 @@ const PayState=(props)=>{
         }
       });
       settransaction(await response.json());
-      console.log(transaction);
     }
     settransaction([10]);
 

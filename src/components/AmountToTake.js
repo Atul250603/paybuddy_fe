@@ -1,16 +1,26 @@
 import React, { useEffect, useState } from 'react'
+import toast from 'react-hot-toast';
 export default function AmountToTake(props) {
   const [user, setuser] = useState(null)
   useEffect(() => {
     const getuser=async()=>{
-      const response = await fetch("https://paybuddy.onrender.com/auth/getuser", {
+      const response = await fetch(`${process.env.REACT_APP_SERVER}/auth/getuser`, {
           method: 'POST', // *GET, POST, PUT, DELETE, etc.
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({id:props.User})
         });
-        setuser(await response.json());
+        let msg=await response.json();
+        if(msg && !msg.errors){
+          setuser(msg);
+        }
+        else if(msg && msg.errors){
+          toast.error(msg.errors);
+        }
+        else{
+          toast.error("Some Error Occured");
+        }
     }
     getuser();
   }, [])
