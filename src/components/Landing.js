@@ -21,7 +21,7 @@ function Landing() {
             <div className="d-flex flex-column" style={{minHeight:"40vh"}}>
                 <div className="fw-bold fs-1 text-center mt-4">Key Features</div>
                 <div className="flex-grow-1 d-flex justify-content-center align-items-center">
-                    <div className="grid row col-12 justify-content-center gap-4">
+                    <div className="grid row col-12 justify-content-center gap-4 p-4">
                         <div className="text-center .col-xs-12 ga col-sm-5">
                             <div className="d-flex justify-content-center">
                                 <div style={{ width: "50px", height: "50px" }}>
@@ -54,7 +54,7 @@ function Landing() {
             <div className="d-flex flex-column" style={{backgroundColor: "#EFF6FF",minHeight:"40vh" }}>
                 <div className="fw-bold fs-1 text-center mt-4">How It Works</div>
                 <div className="flex-grow-1 d-flex justify-content-center align-items-center">
-                    <div className="grid row col-12 justify-content-center gap-4">
+                    <div className="grid row col-12 justify-content-center gap-4 p-4">
                         <div className="text-center col-xs-12 col-sm-3 ">
                             <div className="d-flex justify-content-center">
                                 <div className="bg-primary rounded-circle p-2 px-3 text-white fw-bold" style={{ width: "max-content" }}>1</div>
