@@ -3,8 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 export default function Navbar() {
   let navigate=useNavigate();
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+    <nav className="navbar navbar-expand-lg navbar-light bg-white">
         <div className="container-fluid">
+    
           <Link className="navbar-brand" to="/">PayBuddy</Link>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon" />
@@ -13,7 +14,6 @@ export default function Navbar() {
             <div className="navbar-nav d-flex w-100">
               <div className='d-flex w-50'>
               <Link className="nav-link active" aria-current="page" to="/">Home</Link>
-              <Link className="nav-link" to="/about">About Us</Link>
               <Link className="nav-link" to="/billsplit">Bill Splitter</Link>
               </div>
               <div className='d-flex justify-content-end w-50'>

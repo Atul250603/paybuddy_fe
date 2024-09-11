@@ -12,7 +12,7 @@ export default function Home(props) {
   const [status, setstatus] = useState("false")
   useEffect(() => {
     if (!localStorage.getItem("token")) {
-      navigate("/login");
+      navigate("/home");
     }
     if(localStorage.getItem('token')){
     const helper=async()=>{

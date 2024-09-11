@@ -6,3 +6,7 @@ body{
 button{
   font-weight: 900!important;
 }
+.bg{
+  background-image: url('./wave-haikei.svg');
+  background-size: cover;
+}
