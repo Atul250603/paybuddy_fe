@@ -1,40 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import toast from 'react-hot-toast';
 export default function AmountToTake(props) {
-  const [user, setuser] = useState(null)
-  useEffect(() => {
-    const getuser=async()=>{
-      const response = await fetch(`${process.env.REACT_APP_SERVER}/auth/getuser`, {
-          method: 'POST', // *GET, POST, PUT, DELETE, etc.
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({id:props.User})
-        });
-        let msg=await response.json();
-        if(msg && !msg.errors){
-          setuser(msg);
-        }
-        else if(msg && msg.errors){
-          toast.error(msg.errors);
-        }
-        else{
-          toast.error("Some Error Occured");
-        }
-    }
-    getuser();
-  }, [])
-  
+  const colors=["#FF0000","#0000FF","#FF69B4"]
   return (
-    (user!=null)?
+    (props.User!=null)?
          
     <div className="col-sm-4">
-<div className="card">
+<div className="card border border-dark border-2">
 <div className="card-body">
-  <h6 className="card-title">Payee : {user.user.name}</h6>
-  <h6 className="card-title">Payee Email : {user.user.email}</h6>
-  <h6 className="card-title">Amount : {props.Amount}</h6>
-  <h6 className="card-title">Date : {props.Date}</h6>
+  <div className='d-flex align-items-center gap-2 mb-2'>
+    <div className='text-white rounded-circle fs-3 d-flex justify-content-center align-items-center' style={{width:"40px",height:"40px",backgroundColor:colors[Math.floor(Math.random()*colors.length)]}}>{props.User.name[0].toUpperCase()}</div>
+    <div className='d-flex h-100 align-items-center'><div className='fs-2'>{props.User.name}</div></div>
+  </div>
+  <h6 className="card-title fs-5 fw-bolder">Email : {props.User.email}</h6>
+  <h6 className="card-title fs-5 fw-bolder">Amount : Rs. {props.Amount}</h6>
+  <h6 className="card-title fs-5 fw-bolder">Date : {new Date(props.Date).toLocaleDateString()}</h6>
 </div>
 </div>
 </div>

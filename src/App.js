@@ -4,13 +4,14 @@ import Home from './components/Home';
 import { Routes, Route,BrowserRouter } from "react-router-dom";
 import Login from './components/Login';
 import Signup from './components/Signup';
-import { useEffect, useState } from 'react';
 import BillSplitter from './components/BillSplitter';
 import {Toaster} from 'react-hot-toast'
 import Landing from './components/Landing';
+import AmountToPayHandler from './components/AmountToPayHandler';
+import AmountToTakeHandler from './components/AmountToTakeHandler';
+import { useState } from 'react';
 function App() {  
-  
-  //one more condition if the transaction is already present then just add the amount so create one api and use it and after that update the array value
+  const [transaction, settransaction] = useState([])
   return (
     <div>
       <div><Toaster position="top-right" toastOptions={{style:{borderRadius: '10px',
@@ -19,7 +20,10 @@ function App() {
       <BrowserRouter>
         <Navbar/>
         <Routes>
-        <Route exact path="/" element={<Home/>} />
+        <Route exact path="/" element={<Home transaction={transaction} settransaction={settransaction}/>}>
+          <Route index element={<AmountToTakeHandler transaction={transaction} settransaction={settransaction}/>}/>
+          <Route path="amounttopay" element={<AmountToPayHandler/>}/>
+        </Route>
         <Route exact path="/home" element={<Landing/>} />
         <Route exact path="/login" element={<Login/>} />
         <Route exact path="/signup" element={<Signup/>} />

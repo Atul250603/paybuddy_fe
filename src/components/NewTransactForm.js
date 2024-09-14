@@ -4,44 +4,33 @@ export default function NewTransactForm(props) {
   const reflCose = useRef(null)
   const [data, setdata] = useState({email:"",amount:""});
   const [showSpinner,setshowSpinner]=useState(false);
-  const{topay,settopay}=props;
+  const{transaction,settransaction}=props;
   const settingData=(e)=>{
     setdata({...data,[e.target.name]:e.target.value});
   }
   const makenewtransact=async(e)=>{
     e.preventDefault();
     setshowSpinner(true);
-    const userresponse=await fetch(`${process.env.REACT_APP_SERVER}/auth/getuserbymail`,{
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
-            headers: {
-              'Content-Type': 'application/json'
-              // 'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: JSON.stringify({email:data.email})
-    })
-    const userresp=await userresponse.json();
-    const userId=userresp[0]._id;
-    const idx=topay.findIndex((element)=>{return element.nextUser===userId});
-    const response = await fetch(`${process.env.REACT_APP_SERVER}/transact/topay`, {
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    const idx=transaction.findIndex((element)=>{return element.user.email===data.email});
+    const response = await fetch(`${process.env.REACT_APP_SERVER}/transact/createtotake`, {
+            method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'authToken':localStorage.getItem('token')
-              // 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: JSON.stringify({email:data.email,amount:data.amount}) // body data type must match "Content-Type" header
+            body: JSON.stringify({email:data.email,amount:data.amount})
           });
       const resp=await response.json();
       if(resp && resp.success){
         if(idx>=0){
-          let temp=[...topay];
+          let temp=[...transaction];
           temp[idx].amount+=Number(data.amount);
-          settopay(temp);
+          settransaction(temp);
         }
         else{
-          let temp=[...topay];
-        temp.push(resp.transact);
-        settopay(temp);
+          let temp=[...transaction];
+          temp.push(resp.transact);
+          settransaction(temp);
         }
         toast.success(resp.success);
       }
@@ -70,7 +59,7 @@ export default function NewTransactForm(props) {
         <div className="modal-body">
         <form onSubmit={makenewtransact}>
   <div className="mb-3">
-    <label htmlFor="exampleInputEmail1" className="form-label">Beneficiary Email</label>
+    <label htmlFor="exampleInputEmail1" className="form-label">Payee Email</label>
     <input type="email" className="form-control" name="email" id="exampleInputEmail1" aria-describedby="emailHelp" onChange={settingData} value={data.email} required/>
   </div>
   <div className="mb-3">

@@ -6,7 +6,7 @@ function Landing() {
         <div className="fw-normal w-100">
             <div className="position-relative d-flex justify-content-center align-items-center" style={{backgroundColor: "#EFF6FF", minHeight: "50vh"}}>
                 <div className="p-2">
-                    <div className="fw-bold fs-1 text-center my-3">Never Forget Who Owes You Money</div>
+                    <div className="fw-bold fs-1 text-center my-3">Never Forget Who Owes You <span className="text-primary">Money</span></div>
                     <div className="d-flex justify-content-center text-secondary fs-5 my-3">
                         <div className="w-75 text-center">
                             PayBuddy helps you keep track of your transactions, debts, and loans. Stay on top of your finances with ease.

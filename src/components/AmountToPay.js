@@ -1,37 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast';
 export default function AmountToPay(props) {
-  const [user, setuser] = useState(null)
   const [amount, setamount] = useState(0);
   const [error, seterror] = useState("");
   const [showSpinner,setshowSpinner]=useState(false);
   const{topay,settopay}=props;
   const refClose = useRef(null)
+  const colors=["#FF0000","#0000FF","#FF69B4"]
   const settingamount=(e)=>{
     setamount(e.target.value);
   }
-  useEffect(() => {
-    const getuser=async()=>{
-      const response = await fetch(`${process.env.REACT_APP_SERVER}/auth/getuser`, {
-          method: 'POST', // *GET, POST, PUT, DELETE, etc.
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({id:props.User})
-        });
-        let msg=await response.json();
-        if(msg && !msg.errors){
-          setuser(msg);
-        }
-        else if(msg && msg.errors){
-          toast.error(msg.errors);
-        }
-        else{
-          toast.error("Some Error Occured");
-        }
-    }
-    getuser();
-  }, [])
+ 
   const paid=async(e)=>{
     e.preventDefault();
     if(amount<=0 || amount>props.Amount){
@@ -44,11 +23,8 @@ export default function AmountToPay(props) {
         headers: {
           'Content-Type': 'application/json',
           'authToken':localStorage.getItem('token')
-          // 'Content-Type': 'application/x-www-form-urlencoded',
         },
-        redirect: 'follow', // manual, *follow, error
-        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-        body: JSON.stringify({email:user.user.email,amount:amount}) // body data type must match "Content-Type" header
+        body: JSON.stringify({email:props.User.email,amount:amount})
       });
       let resp=await response.json(); 
       if(resp && resp.success){
@@ -56,13 +32,13 @@ export default function AmountToPay(props) {
         const tempAmount=props.Amount-amount;
         if(tempAmount==0){
           const temptopay=[...topay];
-          const idx=temptopay.findIndex((element)=>{return element.nextUser===user.user._id});
+          const idx=temptopay.findIndex((element)=>{return element.nextUser._id===props.User._id});
           let removed= temptopay.splice(idx,1);
           settopay(temptopay);
         }
         else{
           const temptopay=[...topay];
-          const idx=temptopay.findIndex((element)=>{return element.nextUser===user.user._id});
+          const idx=temptopay.findIndex((element)=>{return element.nextUser._id===props.User._id});
           temptopay[idx].amount-=amount;
           settopay(temptopay);
         }
@@ -72,18 +48,21 @@ export default function AmountToPay(props) {
     }
   }
   return (
-    (user!=null)?
+    (props.User)?
          
           <div className="col-sm-4">
-    <div className="card">
+    <div className="card border border-dark border-2">
       <div className="card-body">
-        <h6 className="card-title">Beneficiary : {props.Name}</h6>
-        <h6 className="card-title">Beneficiary Email : {user.user.email}</h6>
-        <h6 className="card-title">Amount : {props.Amount}</h6>
-        <h6 className="card-title">Date : {props.Date}</h6>
+        <div className='d-flex align-items-center gap-2 mb-2'>
+          <div className='text-white rounded-circle fs-3 d-flex justify-content-center align-items-center' style={{width:"40px",height:"40px",backgroundColor:colors[Math.floor(Math.random()*colors.length)]}}>{props.User.name[0].toUpperCase()}</div>
+          <div className='d-flex h-100 align-items-center'><div className='fs-2'>{props.User.name}</div></div>
+        </div>
+        <h6 className="card-title fs-5 fw-bolder">Email : {props.User.email}</h6>
+        <h6 className="card-title fs-5 fw-bolder">Amount : Rs. {props.Amount}</h6>
+        <h6 className="card-title fs-5 fw-bolder">Date : {new Date(props.Date).toLocaleDateString()}</h6>
         <div className="text-center">
 <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target={`#example${props.index}`}>
-  Paid
+  Pay
 </button>
 <div className="modal fade" id={`example${props.index}`} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div className="modal-dialog">
@@ -102,7 +81,7 @@ export default function AmountToPay(props) {
     <div className="d-flex justify-content-center">
   <button type="submit" className="btn btn-primary d-flex align-items-center" disabled={showSpinner}>{(showSpinner)?<div class="spinner-border text-light mx-1" role="status">
       <span class="visually-hidden">Loading...</span>
-    </div>:<></>}Paid</button>
+    </div>:<></>}Pay</button>
     </div>
 </form>
       </div>
@@ -114,6 +93,6 @@ export default function AmountToPay(props) {
       </div>
     </div>
   </div>
-    :<></>
+    :<div></div>
   )
 }

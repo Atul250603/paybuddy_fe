@@ -18,7 +18,7 @@ export default function Navbar() {
               </div>
               <div className='d-flex justify-content-end w-50'>
               {(!localStorage.getItem('token'))?<><div><Link className="btn btn-primary mx-2" to="/login">Login</Link></div>
-              <div><Link className="btn btn-primary" to="/signup">Signup</Link></div></>:<><button type="button" className="btn btn-primary" onClick={()=>{localStorage.removeItem('token'); navigate('/login')}}>Logout</button></>}
+              <div><Link className="btn btn-primary" to="/signup">Signup</Link></div></>:<><button type="button" className="btn btn-primary" onClick={()=>{localStorage.removeItem('token'); navigate('/home')}}>Logout</button></>}
               </div>
             </div>
           </div>
