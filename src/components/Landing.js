@@ -9,7 +9,7 @@ function Landing() {
                     <div className="fw-bold fs-1 text-center my-3">Never Forget Who Owes You <span className="text-primary">Money</span></div>
                     <div className="d-flex justify-content-center text-secondary fs-5 my-3">
                         <div className="w-75 text-center">
-                            PayBuddy helps you keep track of your transactions, debts, and loans. Stay on top of your finances with ease.
+                            PayBuddy helps you keep track of your transactions, debts. Stay on top of your finances with ease.
                         </div>
                     </div>
                     <div className="d-flex justify-content-center my-3">
