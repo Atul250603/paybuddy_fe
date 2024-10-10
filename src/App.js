@@ -10,10 +10,12 @@ import Landing from './components/Landing';
 import AmountToPayHandler from './components/AmountToPayHandler';
 import AmountToTakeHandler from './components/AmountToTakeHandler';
 import { useState } from 'react';
+import { Analytics } from "@vercel/analytics/react"
 function App() {  
   const [transaction, settransaction] = useState([])
   return (
     <div>
+      <Analytics/>
       <div><Toaster position="top-right" toastOptions={{style:{borderRadius: '10px',
       background: '#333',
       color: '#fff',}}}/></div>
